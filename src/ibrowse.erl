@@ -355,7 +355,7 @@ try_routing_request(Lb_pid, Parsed_url,
                     Max_pipeline_size,
                     {SSLOptions, IsSSL}, 
                     Headers, Method, Body, Options_1, Timeout,
-    Ori_timeout, Max_attempts , Req_start_time, Try_count) when Try_count =< Max_attempts ->
+                    Max_attempts, Ori_timeout , Req_start_time, Try_count) when Try_count =< Max_attempts ->
     ProcessOptions = get_value(worker_process_options, Options_1, []),
     case ibrowse_lb:spawn_connection(Lb_pid, Parsed_url,
                                              Max_sessions, 
@@ -378,7 +378,7 @@ try_routing_request(Lb_pid, Parsed_url,
                                                 Max_pipeline_size,
                                                 {SSLOptions, IsSSL}, 
                                                 Headers, Method, Body, Options_1,
-                                                Time_remaining, Ori_timeout, Max_attempts, Req_start_time, Try_count + 1);
+                                                Time_remaining, Max_attempts, Ori_timeout, Req_start_time, Try_count + 1);
                         false ->
                             {error, retry_later}
                     end;
@@ -388,7 +388,7 @@ try_routing_request(Lb_pid, Parsed_url,
         Err ->
             Err
     end;
-try_routing_request(_, _, _, _, _, _, _, _, _, _, _, _, _) ->
+try_routing_request(_, _, _, _, _, _, _, _, _, _, _, _, _, _) ->
     {error, retry_later}.
 
 merge_options(Host, Port, Options) ->
